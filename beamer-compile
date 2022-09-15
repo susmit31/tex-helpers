@@ -1,0 +1,22 @@
+#!/bin/bash
+#echo "library(rmarkdown); render('$1.Rmd', output_file='$1.pdf')" | R  &&
+pandoc -s -f markdown -t beamer "$1.Rmd" -o "$1.tex" > /dev/null &&
+ awk '$0 !~ "hypertarget" {print $0}' "$1.tex" > tmp && mv tmp "$1.tex" &&
+ sed -z "s#ignorenonframetext,\n##" "$1.tex" > tmp && mv tmp "$1.tex" &&
+ sed "s#\(PassOp\w*\){\(.*\)}{xcolor}#\1{\2, table}{xcolor}#" "$1.tex" > tmp && mv tmp "$1.tex" &&
+ sed "s#\\\begin{frame}{\(.*\)}#\\\section{\1}\n\\\begin{frame}\[allowframebreaks\]\n{\1}#g" "$1.tex" > tmp &&
+ mv tmp "$1.tex" &&
+ sed -e "s#\\\section{Preface}##" -e "s#\\\section{}##g" -e "s#\\\begin{block}{\(.*\)}#\\\subsection{\1}#g" -e "s#\\\end{block}##g" "$1.tex" > tmp &&
+ mv tmp "$1.tex" &&
+ sed -z "s#\\\begin{frame}<0>\n\\\end{frame}##g" "$1.tex" > tmp &&
+ mv tmp "$1.tex" &&
+ sed "s#\\\setbeamercolor{caption.*##"  "$1.tex" > tmp && mv tmp "$1.tex" &&
+ sed "s#\\\frame{\\\titlepage}#\\\frame{\\\titlepage}\n\\\begin{frame}\[t,allowframebreaks\]\n{Table of contents}\\\setbeamertemplate{section in toc}\[sections numbered\]\n\n\\\tableofcontents\[hideallsubsections\]\n\\\end{frame}#" "$1.tex" > tmp &&
+ mv tmp "$1.tex" &&
+ xelatex "$1.tex" &&
+ xelatex "$1.tex" > /dev/null &&
+ xelatex "$1.tex" > /dev/null &&
+# echo "library('tinytex'); pdflatex('$1.tex')" | R --vanilla
+ ls | grep -P "$1\.(?!(Rmd|tex|pdf))" | xargs -I _ rm _ &&
+ ls | grep *.pdf | xargs -I _ mv _ ./pdfs/_ &&
+ echo "Done!"

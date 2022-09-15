@@ -1,0 +1,3 @@
+#!/bin/bash
+sed -e "s#DOCTITLE#$2#" -e "s#DOCSUBTITLE#$3#" beamertemplate.md > "$1.Rmd"
+echo "Created blank project $1.Rmd"
