@@ -1,3 +1,6 @@
 #!/bin/bash
-sed "s#FILENAME#$1#" cover-temp.tex > tmp && mv tmp "$1.tex" &&
-xelatex "$1.tex"
+sed "s#FILENAME#$1#" cover-temp.tex > tmp && mv tmp "cover-$1.tex" &&
+xelatex "cover-$1.tex" &&
+ls | grep -P "cover-$1\.(?!(Rmd|tex|pdf))" | xargs -I _ rm _ &&
+ls | grep *.pdf | xargs -I _ mv _ ../pdfs/_ &&
+echo "Done!"
