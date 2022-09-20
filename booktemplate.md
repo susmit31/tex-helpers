@@ -1,5 +1,5 @@
 ---
-title: DOCTITLE
+title: "DOCTITLE"
 author: "Susmit Islam, MBBS"
 documentclass: memoir
 output:
